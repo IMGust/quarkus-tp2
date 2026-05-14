@@ -1,0 +1,158 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+skinparam shadowing false
+
+abstract class DefaultEntity <<MappedSuperclass>> {
+    - id : Long
+    - dataCadastro : LocalDateTime
+    - dataAlteracao : LocalDateTime
+    + registrarDataCadastro() : void
+    + registrarDataAlteracao() : void
+}
+
+class Motor {
+    - nome : String
+    - cilindrada : Double
+    - potencia : Integer
+    - torque : Double
+    - taxaCompressao : Double
+    - rpmMax : Integer
+    - preco : Double
+}
+
+class Veiculo {
+    - id : Long
+    - nome : String
+    - modelo : String
+    - ano : Integer
+}
+
+class Radiador {
+    - tipo : String
+    - capacidadeFluidoLitros : Double
+    - dissipacaoTermicaBTU : Double
+    - fileiras : Integer
+    - marca : String
+    - preco : BigDecimal
+}
+
+class Pistao {
+    - material : String
+    - diametro : Double
+    - curso : Double
+    - volumeDomo : Double
+    - marca : String
+    - preco : BigDecimal
+}
+
+abstract class Sobrealimentacao <<Abstract>> {
+    - id : Long
+    - tipo : TipoSobrealimentacao
+}
+
+class SuperCharger {
+    - tipoSupercharger : TipoSuperCharger
+    - tamanhoPolia : Double
+    - padraoCorreia : String
+    - acionamento : TipoAcionamento
+    - fabricante : String
+}
+
+class Turbo {
+    - tipoTurbo : TipoTurbo
+    - pressaoBoost : Double
+    - possuiIntercooler : Boolean
+    - quantidade : Integer
+    - fabricante : String
+    - ladoEscape : Double
+    - ladoAdmissao : Double
+    - tipoFlange : TipoFlange
+    - tipoMancal : TipoMancal
+    - wastegate : TipoWastegate
+    - sistemaRefrigeracao : SistemaRefrigeracao
+}
+
+enum ConfiguracaoMotor {
+    LINHA
+    V
+    BOXER
+}
+
+enum SistemaRefrigeracao {
+    OLEO
+    OLEO_AGUA
+}
+
+enum TipoSobrealimentacao {
+    TURBO
+    SUPERCHARGER
+}
+
+enum TipoSuperCharger {
+    ROOTS
+    TWIN_SCREW
+    CENTRIFUGO
+}
+
+enum TipoAcionamento {
+    CORREIA_DENTADA
+    CORREIA_ACESSORIOS
+    ENGRENAGEM
+}
+
+enum TipoTurbo {
+    SINGLE
+    TWIN_PARALLEL
+    TWIN_SEQUENCIAL
+    TWIN_SCROLL
+    GEOMETRIA_VARIAVEL
+    ELETRICO
+}
+
+enum TipoFlange {
+    T25
+    T3
+    T4
+    TWIN_SCROLL
+    V_BAND
+}
+
+enum TipoMancal {
+    BALL_BEARING
+    JOURNAL_BEARING
+}
+
+enum TipoWastegate {
+    INTERNA
+    EXTERNA
+}
+
+' Heranças
+DefaultEntity <|-- Motor
+DefaultEntity <|-- Radiador
+DefaultEntity <|-- Pistao
+
+Sobrealimentacao <|-- SuperCharger
+Sobrealimentacao <|-- Turbo
+
+' Relacionamentos
+Motor "1" *-- "0..*" Radiador
+Motor "1" *-- "0..*" Pistao
+Motor "0..*" -- "0..*" Veiculo 
+Motor "1" -- "0..1" Sobrealimentacao 
+Radiador "*" --> "1" Motor 
+Pistao "*" --> "1" Motor 
+Veiculo "*" -- "*" Motor 
+
+' Ligações com Enums
+Sobrealimentacao --> TipoSobrealimentacao : tipo
+SuperCharger --> TipoSuperCharger : tipoSupercharger
+SuperCharger --> TipoAcionamento : acionamento
+Turbo --> TipoTurbo : tipoTurbo
+Turbo --> TipoFlange : tipoFlange
+Turbo --> TipoMancal : tipoMancal
+Turbo --> TipoWastegate : wastegate
+Turbo --> SistemaRefrigeracao : sistemaRefrigeracao
+
+@enduml
