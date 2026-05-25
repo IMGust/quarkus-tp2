@@ -21,12 +21,11 @@ public class ProductCatalogSeleniumTest {
     private WebDriver driver;
     private WebDriverWait wait;
     
-    // URL padrão do servidor de desenvolvimento do seu Angular
+
     private final String ANGULAR_APP_URL = "http://localhost:4200";
 
     @BeforeAll
     void setupClass() {
-        // Gerencia e instala o ChromeDriver compatível com a sua versão instalada do Chrome
         WebDriverManager.chromedriver().setup();
     }
 
@@ -34,31 +33,26 @@ public class ProductCatalogSeleniumTest {
     void setupTest() {
         ChromeOptions options = new ChromeOptions();
         
-        // Configurações úteis para estabilidade dos testes
+       
         options.addArguments("--start-maximized");
         options.addArguments("--disable-notifications");
         options.addArguments("--remote-allow-origins=*");
-        
-        // Para rodar sem abrir a janela no CI/CD, descomente a linha abaixo:
-        // options.addArguments("--headless");
-
+       
         driver = new ChromeDriver(options);
         
-        // Tempo padrão para o Selenium esperar pelos elementos na tela de forma inteligente (Explicit Wait)
+    
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     @AfterEach
     void teardown() {
-        // Encerra a sessão do navegador após cada teste
+
         if (driver != null) {
             driver.quit();
         }
     }
 
-    /**
-     * Método auxiliar para realizar login como administrador
-     */
+    
     private void loginAsAdmin() throws InterruptedException {
         driver.get(ANGULAR_APP_URL + "/login");
         
@@ -72,7 +66,7 @@ public class ProductCatalogSeleniumTest {
         passwordInput.sendKeys("admin123");
         submitButton.click();
         
-        // Aguarda a sidebar estar presente para garantir o login bem-sucedido
+        
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("app-sidebar")));
     }
 
@@ -82,7 +76,7 @@ public class ProductCatalogSeleniumTest {
     void testAdminLogin() throws InterruptedException {
         driver.get(ANGULAR_APP_URL + "/login");
 
-        // Aguarda carregar o formulário de login
+       
         WebElement usernameInput = wait.until(
             ExpectedConditions.visibilityOfElementLocated(By.id("username"))
         );
@@ -91,12 +85,12 @@ public class ProductCatalogSeleniumTest {
 
         Thread.sleep(1500);
 
-        // Preenche as credenciais de administrador
+       
         usernameInput.sendKeys("admin");
         passwordInput.sendKeys("admin123");
         Thread.sleep(1500);
 
-        // Clica para logar
+       
         submitButton.click();
 
         // Aguarda o redirecionamento e a sidebar administrativa estar visível
@@ -105,7 +99,7 @@ public class ProductCatalogSeleniumTest {
         );
         assertNotNull(sidebar, "O painel administrativo deveria carregar com a sidebar.");
         
-        // Verifica se a URL mudou para /motores
+    
         assertTrue(driver.getCurrentUrl().endsWith("/motores"), "Deveria ter redirecionado para a lista de motores.");
         
         Thread.sleep(2000);
