@@ -13,6 +13,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Dev Service para SeaweedFS.
@@ -43,6 +44,7 @@ public class SeaweedFSDevService {
         }
 
         LOG.info("[SeaweedFS DevService] iniciando container...");
+        configureDockerSocketForWindows();
 
         @SuppressWarnings("resource")
         GenericContainer<?> c = new GenericContainer<>(IMAGE);
@@ -69,6 +71,22 @@ public class SeaweedFSDevService {
         } catch (Exception e) {
             LOG.warnf("[SeaweedFS DevService] falhou ao iniciar o container: %s", e.getMessage());
             container = null;
+        }
+    }
+
+    private void configureDockerSocketForWindows() {
+        String dockerHost = System.getenv("DOCKER_HOST");
+        if (dockerHost != null && !dockerHost.isBlank()) {
+            LOG.infof("[SeaweedFS DevService] DOCKER_HOST detectado: %s", dockerHost);
+            return;
+        }
+
+        String osName = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
+        if (osName.contains("windows")) {
+            String override = "npipe:////./pipe/dockerDesktopLinuxEngine";
+            LOG.infof("[SeaweedFS DevService] usando Docker Desktop NPipe override: %s", override);
+            System.setProperty("testcontainers.docker.socket.override", override);
+            System.setProperty("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", override);
         }
     }
 

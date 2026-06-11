@@ -3,6 +3,15 @@ package org.gustavo.tp2.resource;
 import org.gustavo.tp2.dto.TurboDTO;
 import org.gustavo.tp2.dto.TurboResponseDTO;
 import org.gustavo.tp2.service.TurboService;
+import org.gustavo.tp2.service.TurboFileService;
+import org.gustavo.tp2.service.ArquivoDownload;
+
+import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+import jakarta.ws.rs.PATCH;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
+import java.io.IOException;
 
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -28,6 +37,9 @@ public class TurboResource {
 
     @Inject
     TurboService service;
+
+    @Inject
+    TurboFileService fileService;
 
     @GET
     public Response buscarTodos(@QueryParam("page") @DefaultValue("0") int page,
@@ -78,6 +90,44 @@ public class TurboResource {
     @Path("/{id: \\d+}")
     public Response apagar(@PathParam("id") Long id) {
         service.delete(id);
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/images/download/{fid}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response download(@PathParam("fid") String fid) {
+        ArquivoDownload download = fileService.download(fid);
+        Response.ResponseBuilder response = Response.ok(download.content(), download.contentType());
+        response.header("Content-Disposition", "attachment; filename=\"" + download.fileName().replace("\"", "") + "\"");
+        return response.build();
+    }
+
+    @PATCH
+    @Path("/images/upload")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response salvarImagem(
+            @RestForm("idTurbo") 
+            @NotNull(message = "idTurbo é obrigatório.")
+            @Min(value = 1, message = "idTurbo deve ser maior ou igual a 1.")
+            Long idTurbo,
+
+            @RestForm("file") 
+            @NotNull(message = "Arquivo de imagem é obrigatório.")
+            FileUpload file) {
+
+        try {
+            fileService.salvar(idTurbo, file);
+            return Response.noContent().build();
+        } catch (IOException e) {
+            return Response.status(Response.Status.CONFLICT).build();
+        }
+    }
+
+    @DELETE
+    @Path("/images/{fid}")
+    public Response removerImagem(@PathParam("fid") String fid) {
+        fileService.remover(fid);
         return Response.noContent().build();
     }
 }

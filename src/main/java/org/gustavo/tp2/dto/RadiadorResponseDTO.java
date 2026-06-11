@@ -2,6 +2,7 @@ package org.gustavo.tp2.dto;
 
 import org.gustavo.tp2.model.Radiador;
 import java.math.BigDecimal;
+import java.util.List;
 
 public record RadiadorResponseDTO(
         Long id,
@@ -11,7 +12,8 @@ public record RadiadorResponseDTO(
         Integer fileiras,
         String marca,
         BigDecimal preco,
-        Long idMotor) {
+        Long idMotor,
+        List<ArquivoResponseDTO> imagens) {
 
     public static RadiadorResponseDTO valueOf(Radiador radiador) {
         return new RadiadorResponseDTO(
@@ -22,7 +24,10 @@ public record RadiadorResponseDTO(
                 radiador.getFileiras(),
                 radiador.getMarca(),
                 radiador.getPreco(),
-                radiador.getMotor() != null ? radiador.getMotor().getId() : null
+                radiador.getMotor() != null ? radiador.getMotor().getId() : null,
+                radiador.getImagens() != null
+                    ? radiador.getImagens().stream().map(ArquivoResponseDTO::valueOf).toList()
+                    : List.of()
         );
     }
 }

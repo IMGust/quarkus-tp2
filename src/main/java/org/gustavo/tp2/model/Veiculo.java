@@ -65,4 +65,32 @@ public class Veiculo {
         this.motores = motores;
     }
 
+    @jakarta.persistence.OneToMany(fetch = jakarta.persistence.FetchType.EAGER, orphanRemoval = true, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
+    @jakarta.persistence.JoinTable(name = "veiculo_arquivo", joinColumns = @jakarta.persistence.JoinColumn(name = "veiculo_id"), inverseJoinColumns = @jakarta.persistence.JoinColumn(name = "arquivo_id", unique = true))
+    private List<Arquivo> imagens;
+
+    public List<Arquivo> getImagens() {
+        return imagens;
+    }
+
+    public void setImagens(List<Arquivo> imagens) {
+        this.imagens = imagens;
+    }
+
+    public void addImagem(Arquivo arquivo) {
+        if (arquivo == null) {
+            return;
+        }
+        if (this.imagens == null) {
+            this.imagens = new java.util.ArrayList<>();
+        }
+        this.imagens.add(arquivo);
+    }
+
+    public void removeImagem(Arquivo arquivo) {
+        if (arquivo == null || this.imagens == null) {
+            return;
+        }
+        this.imagens.remove(arquivo);
+    }
 }

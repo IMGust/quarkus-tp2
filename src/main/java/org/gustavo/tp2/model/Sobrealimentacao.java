@@ -29,5 +29,32 @@ public abstract class Sobrealimentacao {
         this.tipo = tipo;
     }
 
-    
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "sobrealimentacao_arquivo", joinColumns = @JoinColumn(name = "sobrealimentacao_id"), inverseJoinColumns = @JoinColumn(name = "arquivo_id", unique = true))
+    private java.util.List<Arquivo> imagens;
+
+    public java.util.List<Arquivo> getImagens() {
+        return imagens;
+    }
+
+    public void setImagens(java.util.List<Arquivo> imagens) {
+        this.imagens = imagens;
+    }
+
+    public void addImagem(Arquivo arquivo) {
+        if (arquivo == null) {
+            return;
+        }
+        if (this.imagens == null) {
+            this.imagens = new java.util.ArrayList<>();
+        }
+        this.imagens.add(arquivo);
+    }
+
+    public void removeImagem(Arquivo arquivo) {
+        if (arquivo == null || this.imagens == null) {
+            return;
+        }
+        this.imagens.remove(arquivo);
+    }
 }
