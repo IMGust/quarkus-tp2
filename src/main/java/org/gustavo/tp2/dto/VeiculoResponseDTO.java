@@ -8,7 +8,8 @@ public record VeiculoResponseDTO(
         String nome,
         String modelo,
         Integer ano,
-        List<ArquivoResponseDTO> imagens) {
+        List<ArquivoResponseDTO> imagens,
+        List<MotorMinimoResponseDTO> motores) {
 
     public static VeiculoResponseDTO valueOf(Veiculo veiculo) {
         return new VeiculoResponseDTO(
@@ -18,6 +19,9 @@ public record VeiculoResponseDTO(
                 veiculo.getAno(),
                 veiculo.getImagens() != null
                     ? veiculo.getImagens().stream().map(ArquivoResponseDTO::valueOf).toList()
+                    : List.of(),
+                veiculo.getMotores() != null
+                    ? veiculo.getMotores().stream().map(MotorMinimoResponseDTO::valueOf).toList()
                     : List.of()
         );
     }
